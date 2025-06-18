@@ -10,4 +10,9 @@ public class RoomescapeController {
     public String home() {
         return "home";
     }
+
+    @GetMapping("/reservation")
+    public String reservation() {
+        return "reservation";
+    }
 }
