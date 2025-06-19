@@ -32,4 +32,8 @@ public class Reservation {
     public LocalTime getTime() {
         return time;
     }
+
+    public static Reservation toEntity(Reservation reservation, Long id) {
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+    }
 }
