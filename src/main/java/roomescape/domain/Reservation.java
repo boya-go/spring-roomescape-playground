@@ -1,7 +1,8 @@
-package roomescape;
+package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import roomescape.exception.MissingReservationFiledsException;
 
 public class Reservation {
 
@@ -15,6 +16,12 @@ public class Reservation {
         this.name = name;
         this.date = reservationDate;
         this.time = reservationTime;
+    }
+
+    public void validate() {
+        if (this.name == null || this.name.isBlank()|| this.date == null || this.time == null) {
+            throw new MissingReservationFiledsException("모든 필드를 채워야 합니다.");
+        }
     }
 
     public Long getId() {

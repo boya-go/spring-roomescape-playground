@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.controller;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Reservation;
+import roomescape.exception.ReservationNotFoundException;
 
 @RestController
-public class ReservationController {
+public class ReservationApiController {
 
     private List<Reservation> reservations = new ArrayList<>();
     private AtomicLong index = new AtomicLong(1);
@@ -26,6 +28,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> addReservation(@RequestBody Reservation reservation) {
+        reservation.validate();
         Reservation newReservation = Reservation.toEntity(reservation, index.getAndIncrement());
         reservations.add(newReservation);
         return ResponseEntity
@@ -38,7 +41,7 @@ public class ReservationController {
         Reservation reservation = reservations.stream()
                 .filter(it -> Objects.equals(it.getId(), id))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new ReservationNotFoundException("삭제할 수 있는 예약이 존재하지 않습니다."));
 
         reservations.remove(reservation);
 
