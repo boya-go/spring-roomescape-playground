@@ -28,18 +28,17 @@ public class ReservationApiController {
 
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> addReservation(@RequestBody Reservation reservation) {
-        reservation.validate();
         Reservation newReservation = Reservation.toEntity(reservation, index.getAndIncrement());
         reservations.add(newReservation);
         return ResponseEntity
-                .created(URI.create("/reservations/" + newReservation.getId()))
+                .created(URI.create("/reservations/" + newReservation.id()))
                 .body(newReservation);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         Reservation reservation = reservations.stream()
-                .filter(it -> Objects.equals(it.getId(), id))
+                .filter(it -> Objects.equals(it.id(), id))
                 .findFirst()
                 .orElseThrow(() -> new ReservationNotFoundException("삭제할 수 있는 예약이 존재하지 않습니다."));
 
