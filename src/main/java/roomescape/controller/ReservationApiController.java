@@ -1,21 +1,23 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
-import roomescape.domain.Reservations;
+import roomescape.domain.dao.Reservations;
 import roomescape.domain.dto.ReservationRequest;
-import roomescape.exception.ReservationNotFoundException;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationApiController {
 
-    private final Reservations reservations = new Reservations();
+    private final Reservations reservations;
+
+    public ReservationApiController(Reservations reservations) {
+        this.reservations = reservations;
+    }
 
     @GetMapping
     public ResponseEntity<List<Reservation>> getReservations() {
@@ -23,9 +25,8 @@ public class ReservationApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequest dto) {
-        Reservation reservation = Reservation.create(dto.getName(), dto.getDate(), dto.getTime());
-        reservations.save(reservation);
+    public ResponseEntity<Reservation> addReservation(@Valid @RequestBody ReservationRequest dto) {
+        Reservation reservation = reservations.insert(dto);
         return ResponseEntity
                 .created(URI.create("/reservations/" + reservation.getId()))
                 .body(reservation);
