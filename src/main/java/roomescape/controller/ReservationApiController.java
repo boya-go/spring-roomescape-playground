@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
+import roomescape.domain.Reservations;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.exception.ReservationNotFoundException;
 
@@ -14,17 +15,17 @@ import roomescape.exception.ReservationNotFoundException;
 @RequestMapping("/reservations")
 public class ReservationApiController {
 
-    private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
+    private final Reservations reservations = new Reservations();
 
     @GetMapping
     public ResponseEntity<List<Reservation>> getReservations() {
-        return ResponseEntity.ok(List.copyOf(reservations.values()));
+        return ResponseEntity.ok(reservations.findAll());
     }
 
     @PostMapping
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequest dto) {
         Reservation reservation = Reservation.create(dto.getName(), dto.getDate(), dto.getTime());
-        reservations.put(reservation.getId(), reservation);
+        reservations.save(reservation);
         return ResponseEntity
                 .created(URI.create("/reservations/" + reservation.getId()))
                 .body(reservation);
@@ -32,10 +33,7 @@ public class ReservationApiController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
-        Reservation removed = reservations.remove(id);
-        if (removed == null) {
-            throw new ReservationNotFoundException("삭제할 수 있는 예약이 존재하지 않습니다.");
-        }
+        reservations.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
