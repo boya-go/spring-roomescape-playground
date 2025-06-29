@@ -12,15 +12,18 @@ import roomescape.domain.dto.ReservationRequest;
 import roomescape.exception.ReservationNotFoundException;
 
 @Repository
-public class Reservations {
+public class ReservationDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private static final String TABLE_NAME = "reservation";
+    private static final String SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
+    private static final String DELETE_BY_ID = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
 
-    public Reservations(JdbcTemplate jdbcTemplate) {
+    public ReservationDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
+                .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -31,13 +34,11 @@ public class Reservations {
     }
 
     public List<Reservation> findAll() {
-        String sql = "SELECT * FROM reservation";
-        return jdbcTemplate.query(sql, rowMapper());
+        return jdbcTemplate.query(SELECT_ALL, rowMapper());
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM reservation WHERE ID = ?";
-        int count = jdbcTemplate.update(sql, id);
+        int count = jdbcTemplate.update(DELETE_BY_ID, id);
         if (count == 0) {
             throw new ReservationNotFoundException("삭제할 수 있는 예약이 존재하지 않습니다.");
         }

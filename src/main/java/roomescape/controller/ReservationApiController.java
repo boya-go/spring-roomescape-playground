@@ -6,16 +6,16 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
-import roomescape.domain.dao.Reservations;
+import roomescape.domain.dao.ReservationDAO;
 import roomescape.domain.dto.ReservationRequest;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationApiController {
 
-    private final Reservations reservations;
+    private final ReservationDAO reservations;
 
-    public ReservationApiController(Reservations reservations) {
+    public ReservationApiController(ReservationDAO reservations) {
         this.reservations = reservations;
     }
 
